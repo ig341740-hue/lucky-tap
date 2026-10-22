@@ -2,8 +2,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-
- <meta charset="UTF-8">
+  <div class="panel">
+  <h2>📺 Реклама</h2>
+  <p>Посмотри рекламу и получи 100 монет!</p>
+  <button class="action" id="watchAd">
+    📺 Смотреть рекламу
+  </button>
+</div>script src='//libtl.com/sdk.js' data-zone='12099489' data-sdk='show_12099489'></script>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lucky Tap</title>
 <style>
@@ -132,6 +138,35 @@ document.getElementById("bonus").onclick = () => {
  alert("Ты получил 100 монет!");
 };
 
+let adLoading = false;
+
+document.getElementById("watchAd").onclick = async () => {
+  if (adLoading) return;
+
+  if (typeof show_12099489 !== "function") {
+    alert("Реклама пока не загрузилась.");
+    return;
+  }
+
+  adLoading = true;
+  const button = document.getElementById("watchAd");
+  button.disabled = true;
+
+  try {
+    await show_12099489();
+
+    coins += 100;
+    save();
+    update();
+
+    alert("🎉 Получено 100 монет!");
+  } catch (error) {
+    alert("Реклама не завершена или недоступна.");
+  } finally {
+    adLoading = false;
+    button.disabled = false;
+  }
+};
 update();
 </script>
 </body>
