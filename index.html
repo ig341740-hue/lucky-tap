@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lucky Tap</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:linear-gradient(160deg,#101936,#263f77);
+ color:white;
+ font-family:Arial,sans-serif;
+ text-align:center;
+ min-height:100vh;
+ padding:25px 15px;
+}
+h1{color:#ffd54f;font-size:36px}
+.score{font-size:42px;font-weight:bold;margin:15px}
+.coin{
+ width:210px;height:210px;
+ border-radius:50%;
+ border:10px solid #d28a08;
+ background:radial-gradient(circle at 30% 25%,#fff1a0,#ffc107 55%,#d88600);
+ font-size:100px;
+ box-shadow:0 10px 25px #0008;
+ cursor:pointer;
+ touch-action:manipulation;
+}
+.coin:active{transform:scale(.94)}
+.panel{
+ background:#ffffff18;
+ padding:20px;
+ border-radius:18px;
+ margin:25px auto;
+ max-width:360px;
+}
+.action{
+ background:#ffca28;
+ color:#202020;
+ border:0;
+ border-radius:12px;
+ padding:14px;
+ margin:6px;
+ font-size:16px;
+ font-weight:bold;
+ cursor:pointer;
+}
+p{color:#d7e0f4}
+</style>
+</head>
+<body>
+<h1>🪙 LUCKY TAP</h1>
+<p>Твои монеты</p>
+<div class="score" id="score">0</div>
+<button class="coin" id="coin">★</button>
+<p>Нажимай и зарабатывай монеты!</p>
+
+<div class="panel">
+<h2>⚡ Улучшения</h2>
+<p>Монет за нажатие: <b id="power">1</b></p>
+<p>Цена улучшения: <b id="cost">50</b></p>
+<button class="action" id="upgrade">
+Улучшить
+</button>
+</div>
+
+<div class="panel">
+<h2>🎁 Ежедневный бонус</h2>
+<button class="action" id="bonus">
+Получить 100 монет
+</button>
+</div>
+
+<script>
+const KEY = "luckyTapSave";
+let saved = {};
+try {
+ saved = JSON.parse(localStorage.getItem(KEY)) || {};
+} catch(e) {}
+
+let coins = Number(saved.coins) || 0;
+let power = Math.max(1, Number(saved.power) || 1);
+let lastBonus = Number(saved.lastBonus) || 0;
+
+function cost() {
+ return power * 50;
+}
+
+function save() {
+ localStorage.setItem(KEY, JSON.stringify({
+  coins, power, lastBonus
+ }));
+}
+
+function update() {
+ document.getElementById("score").textContent =
+  coins.toLocaleString("ru-RU");
+ document.getElementById("power").textContent = power;
+ document.getElementById("cost").textContent = cost();
+}
+
+document.getElementById("coin").onclick = () => {
+ coins += power;
+ save();
+ update();
+};
+
+document.getElementById("upgrade").onclick = () => {
+ if(coins < cost()) {
+  alert("Недостаточно монет!");
+  return;
+ }
+ coins -= cost();
+ power++;
+ save();
+ update();
+};
+
+document.getElementById("bonus").onclick = () => {
+ const now = Date.now();
+ if(now - lastBonus < 86400000) {
+  alert("Бонус уже получен. Приходи завтра!");
+  return;
+ }
+ coins += 100;
+ lastBonus = now;
+ save();
+ update();
+ alert("Ты получил 100 монет!");
+};
+
+update();
+</script>
+</body>
+</html>
